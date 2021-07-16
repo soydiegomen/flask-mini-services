@@ -4,7 +4,7 @@ from models import User, Note, Serializer
 import json
 from app import db
 from sqlalchemy.ext.declarative import DeclarativeMeta
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, joinedload, noload
 from sqlalchemy import create_engine
 
 class AlchemyEncoder(json.JSONEncoder):
@@ -62,7 +62,15 @@ def get_notes():
     #engine = create_engine('mysql+mysqlconnector://root:root@localhost:8889/scrapy_test_db')
     #session = sessionmaker(bind=engine)
     #notes = session.query(Note).all()
-    notes = db.session.query(Note).order_by(Note.id).all()
+
+    #notes = db.session.query(Note).order_by(Note.id).all()
+    """ session.query(Child).\
+    options(joinedload(Child.parent).
+            lazyload(Parent.dogs)).\
+    all() """
+    notes = db.session.query(Note).options(joinedload(Note.user).
+            lazyload(User.notes)).all()
+
     #lastUser = []
     print('#Entro a get_note')
     result = []

@@ -34,3 +34,6 @@ http://127.0.0.1:5000/create_user
 
 +Create notes
 http://127.0.0.1:5000/create_note
+
++Obtener las notas
+http://127.0.0.1:5000/notes
