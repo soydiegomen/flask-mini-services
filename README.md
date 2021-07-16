@@ -31,3 +31,6 @@ http://127.0.0.1:5000/
 
 +Crear un nuevo usuario
 http://127.0.0.1:5000/create_user
+
++Create notes
+http://127.0.0.1:5000/create_note

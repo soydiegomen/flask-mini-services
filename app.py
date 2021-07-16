@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
 
 app = Flask(__name__)
 
@@ -7,6 +8,9 @@ app = Flask(__name__)
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/scrapy_test_db'
 db = SQLAlchemy(app)
+
+""" def db_connect():
+    return create_engine(app.config['SQLALCHEMY_DATABASE_URI']) """
 
 """ @app.route("/")
 def hello_world():
