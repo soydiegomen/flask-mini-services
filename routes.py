@@ -1,11 +1,7 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from app import app
-from models import User, Note, Serializer
-import json
+from models import User, Note
 from app import db
-from sqlalchemy.ext.declarative import DeclarativeMeta
-from sqlalchemy.orm import sessionmaker, joinedload, noload
-from sqlalchemy import create_engine
 
 
 @app.route("/")
@@ -14,8 +10,11 @@ def index():
 
 @app.route("/users")
 def get_users():
-    print('#Hello en consola 1.3')
-    users = User.query.all()
+    email = request.args.get('email')
+    print(f'#Input {email}')
+    #users = User.query.filter(User.email == email).all()
+    search = f'%{email}%'
+    users = User.query.filter(User.email.like(search)).all()
     return jsonify(users)
 
 
