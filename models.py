@@ -15,44 +15,18 @@ class Serializer(object):
     def serialize_list(l):
         return [m.serialize() for m in l]
 
-
-@dataclass
-class Note(db.Model):
-    id: int
-    title: str
-    content: str
-    user_id: int
-    #user: User
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=True)
-    content = db.Column(db.String(500), nullable=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    #user = db.relationship(User)
-
-    def serialize(self):
-        d = Serializer.serialize(self)
-        return d
-    
-    def serialize_list(notes):
-        notesArray = []
-        for note in notes:
-            d = Serializer.serialize(note)
-            notesArray.append(d)
-
-        return notesArray
-
 @dataclass
 class User(db.Model):
     id: int
     username: str
     email: str
-    notes: List[Note] = field(default_factory=list)
+    #notes: List[Note] = field(default_factory=list)
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    notes = db.relationship("Note", backref='user')
+    #notes = db.relationship("Note", backref='user')
+    notes = db.relationship("Note", back_populates="user")
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -68,6 +42,35 @@ class User(db.Model):
             usersArray.append(d)
 
         return usersArray
+
+
+
+@dataclass
+class Note(db.Model):
+    id: int
+    title: str
+    content: str
+    user_id: int
+    user: User
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=True)
+    content = db.Column(db.String(500), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    #user = db.relationship(User)
+    user = db.relationship("User", back_populates="notes")
+
+    def serialize(self):
+        d = Serializer.serialize(self)
+        return d
+    
+    def serialize_list(notes):
+        notesArray = []
+        for note in notes:
+            d = Serializer.serialize(note)
+            notesArray.append(d)
+
+        return notesArray
 
 
 if __name__ == "__main__":
