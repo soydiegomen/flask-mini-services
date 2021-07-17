@@ -2,6 +2,9 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.inspection import inspect
 from app import db
+from dataclasses import dataclass
+from typing import List
+from dataclasses import field
 
 class Serializer(object):
 
@@ -12,7 +15,40 @@ class Serializer(object):
     def serialize_list(l):
         return [m.serialize() for m in l]
 
+
+@dataclass
+class Note(db.Model):
+    id: int
+    title: str
+    content: str
+    user_id: int
+    #user: User
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=True)
+    content = db.Column(db.String(500), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    #user = db.relationship(User)
+
+    def serialize(self):
+        d = Serializer.serialize(self)
+        return d
+    
+    def serialize_list(notes):
+        notesArray = []
+        for note in notes:
+            d = Serializer.serialize(note)
+            notesArray.append(d)
+
+        return notesArray
+
+@dataclass
 class User(db.Model):
+    id: int
+    username: str
+    email: str
+    notes: List[Note] = field(default_factory=list)
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -33,23 +69,6 @@ class User(db.Model):
 
         return usersArray
 
-class Note(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=True)
-    content = db.Column(db.String(500), nullable=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    def serialize(self):
-        d = Serializer.serialize(self)
-        return d
-    
-    def serialize_list(notes):
-        notesArray = []
-        for note in notes:
-            d = Serializer.serialize(note)
-            notesArray.append(d)
-
-        return notesArray
 
 if __name__ == "__main__":
 
