@@ -27,7 +27,7 @@ User.query.all()
 ### Endpoints
 
 +Obtiene la lista de usuarios
-http://127.0.0.1:5000/
+http://127.0.0.1:5000/users?email=admin
 
 +Crear un nuevo usuario
 http://127.0.0.1:5000/create_user

@@ -1,7 +1,8 @@
-from flask import Flask, jsonify, request
+from flask import jsonify, request
 from app import app
 from models import User, Note
 from app import db
+from sqlalchemy import or_
 
 
 @app.route("/")
@@ -11,10 +12,21 @@ def index():
 @app.route("/users")
 def get_users():
     email = request.args.get('email')
-    print(f'#Input {email}')
-    #users = User.query.filter(User.email == email).all()
-    search = f'%{email}%'
-    users = User.query.filter(User.email.like(search)).all()
+    """ users = User.query.filter(or_ (
+        User.email.like(search),
+        User.username.like(search)
+    )).all() """
+    query = User.query
+
+    if email :
+        search = f'%{email}%'
+        query = query.filter(or_ (
+            User.email.like(search),
+            User.username.like(search)
+        ))
+
+    users = query.all()
+
     return jsonify(users)
 
 
@@ -38,6 +50,9 @@ def create_notes():
 
 @app.route("/notes")
 def get_notes():
-    notes = Note.query.all()
+    user_email = request.args.get('user_email')
+    print(f'#Input {user_email}')
+    search = f'%{user_email}%'
+    notes = Note.query.filter(Note.user.has(User.email.like(search))).all()
 
     return jsonify(notes)
