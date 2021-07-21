@@ -9,13 +9,9 @@ from sqlalchemy import or_
 def index():
     return "<p>Hello!</p>"
 
-@app.route("/users")
+@app.route("/users", methods=['GET'])
 def get_users():
     email = request.args.get('email')
-    """ users = User.query.filter(or_ (
-        User.email.like(search),
-        User.username.like(search)
-    )).all() """
     query = User.query
 
     if email :
@@ -38,6 +34,17 @@ def create_user():
     db.session.add(guest)
     db.session.commit()
     return jsonify({})
+
+@app.route('/users/<user_id>', methods=['PUT'])
+def update_user(user_id):
+    data = request.json
+    user = User.query.get(user_id)
+    print(data)
+    print('#Email ' + data['email'])
+    user.email = data['email']
+    db.session.commit()
+    return jsonify(user)
+    
 
 @app.route("/create_note")
 def create_notes():
